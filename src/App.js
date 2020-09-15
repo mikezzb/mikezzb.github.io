@@ -6,6 +6,7 @@ import { Canvas, useFrame } from 'react-three-fiber';
 import { Zoom, Fade } from 'react-reveal';
 import { AiFillLinkedin, AiFillGithub } from 'react-icons/ai';
 import { BsArrowRight } from 'react-icons/bs';
+import { MdWork, MdSchool } from 'react-icons/md';
 import './App.css';
 
 const number = isMobile ? 25 : 35;
@@ -33,9 +34,10 @@ const Content = () => {
         ...random(i),
         config: { mass: 20, tension: 150, friction: 50 },
     }));
-    useEffect(() =>
-        setInterval(() => set(i => ({ ...random(i), delay: i * 40 })), 2600),
-    []);
+    useEffect(() => {
+        const interval = setInterval(() => set(i => ({ ...random(i), delay: i * 40 })), 2600);
+        return (() => clearInterval(interval));
+    }, []);
     return data.map((d, index) => (
         <a.mesh key={index} {...springs[index]} castShadow receiveShadow>
             <boxBufferGeometry
@@ -68,48 +70,149 @@ const Lights = () => (
     </group>
 );
 
+const SocialMedia = () => (
+    <>
+        <AiFillGithub className="social-media" onClick={() => window.open('https://github.com/mikezzb')} />
+        <AiFillLinkedin className="social-media" onClick={() => window.open('https://www.linkedin.com/in/mikezzb')} />
+    </>
+);
+
 export default function App() {
+    const [showIntro, setShowIntro] = useState(true);
+    const IntroPage = () => (
+        <div className="intro page">
+            <div className="text-overlay">
+                <div className="name-bar">
+                    <div>
+                        <h4>MIKE</h4>
+                        <h4>ZHOU</h4>
+                    </div>
+                    <span className="divider" />
+                    <SocialMedia />
+                </div>
+                <div className="description-bar">
+                    <BsArrowRight
+                        onClick={() => setShowIntro(false)}
+                    />
+                    <h4>Coder&Thinker</h4>
+                    <h4>@BEng AIST CUHK</h4>
+                </div>
+            </div>
+            <Canvas
+                shadowMap
+                camera={{ position: [0, 0, 100], fov: 100 }}
+                onCreated={({ gl }) => gl.setClearColor('black')}
+            >
+                <Lights />
+                <Content />
+            </Canvas>
+        </div>
+    );
+
+    const ExperienceCard = ({ experience }) => (
+        <div className="experience">
+            <div>
+                <span className="position">{experience.position}</span>
+                <span className="company">{`@${experience.company}`}</span>
+            </div>
+            <span className="time">{experience.time}</span>
+            {
+                experience.descriptions.map(text =>
+                    <span className="description">
+                        <p>{text}</p>
+                    </span>
+                )
+            }
+        </div>
+    );
+
+    const AboutPage = () => (
+        <div className="about page">
+            <div className="left">
+                <div className="center top">
+                    <span className="icon" />
+                    <h3>Zhou Zebo</h3>
+                    <h4>Full Stack Developer</h4>
+                </div>
+                <div className="bottom">
+                    <div>
+                        <div>
+                            <span>Mail</span>
+                            <span>Blog</span>
+                            <span>Location</span>
+                        </div>
+                        <div>
+                            <span>mikezhoudev@gmail.com</span>
+                            <span>https://zzblog.herokuapp.com</span>
+                            <span>Hong Kong</span>
+                        </div>
+                    </div>
+                    <div>
+                        <p>
+                            Hi I'm Mike, a tech enthusiast! I love every innovative digital product, both hardware and software, and every cute things.
+                            During my leisure time, I love play around with trendy frameworks / technologies.
+                        </p>
+                    </div>
+                    <div>
+                        <SocialMedia />
+                    </div>
+                </div>
+            </div>
+            <Fade top delay={800}>
+                <div className="right">
+                    <h2>
+                        <span className="dot">
+                            <MdWork />
+                        </span>
+                        WORK EXPERIENCE
+                    </h2>
+                    {
+                        [
+                            {
+                                position: 'Software Engineer Intern',
+                                company: 'KaChick AI Limited',
+                                time: 'Jun 2020 - Spet 2020',
+                                descriptions: [
+                                    'Co developed an online video proofing platform using React.js and Firebase.',
+                                    'Assist in the maintenance and enhancement of an existing photo proofing platform',
+                                    'Conduct feasibility studies in computer vision such as Google Vision and open-source models to analyze visual data.',
+                                ],
+                            },
+                        ].map(exp => <ExperienceCard experience={exp} />)
+                    }
+                    <h2>
+                        <span className="dot">
+                            <MdSchool />
+                        </span>
+                        EDUCATION
+                    </h2>
+                    {
+                        [
+                            {
+                                position: 'The Chinese University of Hong Kong',
+                                company: 'BEng Artificial Intellegience: System & Technology',
+                                time: 'Spet 2019 - Present',
+                                descriptions: [
+                                    'GPA: 3.7 / 4',
+                                    'Dean\'s List, 2019-2020',
+                                ],
+                            },
+                        ].map(exp => <ExperienceCard experience={exp} />)
+                    }
+                </div>
+            </Fade>
+        </div>
+    );
+
     return (
         <>
-            <div className="intro page">
-                <div className="text-overlay">
-                    <div className="name-bar">
-                        <div>
-                            <h4>MIKE</h4>
-                            <h4>ZHOU</h4>
-                        </div>
-                        <span className="divider" />
-                        <AiFillGithub onClick={() => window.open('https://github.com/mikezzb')} />
-                        <AiFillLinkedin onClick={() => window.open('https://www.linkedin.com/in/mikezzb')} />
-                    </div>
-                    <div className="description-bar">
-                        <BsArrowRight />
-                        <h4>Coder&Thinker</h4>
-                        <h4>@BEng AIST CUHK</h4>
-                    </div>
-                </div>
-                <Canvas
-                    shadowMap
-                    camera={{ position: [0, 0, 100], fov: 100 }}
-                    onCreated={({ gl }) => gl.setClearColor('black')}
-                >
-                    <Lights />
-                    <Content />
-                </Canvas>
-            </div>
-            <div className="main page">
-                <div className="left center">
-                    <h2>About</h2>
-                </div>
-                <Fade right>
-                    <div className="right">
-                    </div>
-                </Fade>
-            </div>
-            <div className="work page">
-                <div className="left" />
-                <div className="right center" />
-            </div>
+            {
+                showIntro ?
+                    <IntroPage /> :
+                    <Fade bottom>
+                        <AboutPage />
+                    </Fade>
+            }
         </>
     );
 }
