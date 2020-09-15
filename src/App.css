@@ -1,38 +1,92 @@
-.App {
-  text-align: center;
+body {
+  margin: 0;
+  overflow-x: hidden;
+  color: white;
+  --custom-coral: #EE786E;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.page {
   display: flex;
-  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+}
+
+.left, .right {
+  width: 50%;
+  height: 100%;
+}
+
+.center {
+  display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.left h2 {
+  font-family: 'Dancing Script', cursive;
+  font-size: 58px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.intro.page > .text-overlay {
+  position: absolute;
+  z-index: 1;
+  top: 5vw;
+  bottom: 5vw;
+  left: 7vw;
+  right: 7vw;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+
+.name-bar {
+  height: 30px;
+  width: fit-content;
+  display: flex;
+  align-items: center;
+}
+
+.name-bar > div:first-child > * {
+  margin: -3px 0;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.main.page > .left {
+  background-color: var(--custom-coral);
+}
+
+.work.page > .right {
+  background-color: var(--custom-coral);
+}
+
+.divider {
+  margin-left: 16px;
+  height: 100%;
+  width: .15vw;
+  min-width: 2px;
+  background: currentColor;
+}
+
+.name-bar > svg {
+  font-size: 24px;
+  margin-left: 16px;
+  cursor: pointer;
+  transition: all .2s ease-in-out;
+}
+
+.description-bar {
+  position: absolute;
+  bottom: 0;
+}
+
+.description-bar > svg {
+  cursor: pointer;
+  font-size: 50px;
+  transition: all .2s ease-in-out;
+}
+
+.name-bar > svg:hover,
+.description-bar > svg:hover {
+  color: lightpink;
+  transform: scale(1.2);
 }
