@@ -1,12 +1,15 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useReducer, useState, useEffect } from 'react';
 import { isMobile } from 'react-device-detect';
 import { useSprings, a } from '@react-spring/three';
 import * as THREE from 'three';
 import { Canvas, useFrame } from 'react-three-fiber';
 import { Zoom, Fade } from 'react-reveal';
-import { AiFillLinkedin, AiFillGithub } from 'react-icons/ai';
-import { BsArrowRight } from 'react-icons/bs';
-import { MdWork, MdSchool } from 'react-icons/md';
+import {
+    AiFillLinkedin, AiFillGithub, AiFillCode, AiFillRead
+} from 'react-icons/ai';
+import { BsArrowRight, BsCodeSlash } from 'react-icons/bs';
+import { MdWork, MdSchool, MdFavorite } from 'react-icons/md';
+import { GiLightSabers, GiPistolGun } from 'react-icons/gi';
 import './App.css';
 
 const number = isMobile ? 25 : 35;
@@ -77,8 +80,79 @@ const SocialMedia = () => (
     </>
 );
 
+const SKILLS = [
+    {
+        category: 'Frontend',
+        language: [
+            {
+                name: 'HTML & CSS',
+                value: 0.8,
+            },
+            {
+                name: 'React.js',
+                value: 0.8,
+            },
+            {
+                name: 'RESTful APIs',
+                value: 0.7,
+            },
+        ],
+    },
+    {
+        category: 'Backend',
+        language: [
+            {
+                name: 'Node.js',
+                value: 0.7,
+            },
+            {
+                name: 'MongoDB',
+                value: 0.5,
+            },
+            {
+                name: 'MySQL',
+                value: 0.48,
+            },
+        ],
+    },
+    {
+        category: 'AIML',
+        language: [
+            {
+                name: 'Python',
+                value: 0.7,
+            },
+            {
+                name: 'Tensorflow',
+                value: 0.5,
+            },
+            {
+                name: 'OpenCV',
+                value: 0.5,
+            },
+        ],
+    },
+    {
+        category: 'OTHERS',
+        language: [
+            {
+                name: 'React Native',
+                value: 0.6,
+            },
+            {
+                name: 'Android',
+                value: 0.5,
+            },
+            {
+                name: 'Java',
+                value: 0.5,
+            },
+        ],
+    },
+];
+
 export default function App() {
-    const [showIntro, setShowIntro] = useState(true);
+    const [showIntro, setShowIntro] = useState(false);
     const IntroPage = () => (
         <div className="intro page">
             <div className="text-overlay">
@@ -118,7 +192,7 @@ export default function App() {
             <span className="time">{experience.time}</span>
             {
                 experience.descriptions.map(text =>
-                    <span className="description">
+                    <span className="description" key={text}>
                         <p>{text}</p>
                     </span>
                 )
@@ -126,13 +200,60 @@ export default function App() {
         </div>
     );
 
+    const SkillCard = () => {
+        const [skillIndex, setSkillIndex] = useState(0);
+        return (
+            <>
+                <h2>
+                    <span className="dot">
+                        <BsCodeSlash />
+                    </span>
+                    CODING SKILLS
+                    <span
+                        className="skill-category"
+                        onClick={() => setSkillIndex(skillIndex === SKILLS.length - 1 ? 0 : skillIndex + 1)}
+                    >
+                        {`(${SKILLS[skillIndex].category})`}
+                    </span>
+                </h2>
+                <div className="skills-wrapper">
+                    {
+                        SKILLS[skillIndex].language.map(skill =>
+                            <div className="skill-container" key={skill.name}>
+                                <ProgressRing value={skill.value} />
+                                <span>
+                                    {skill.name}
+                                </span>
+                            </div>)
+                    }
+                </div>
+            </>
+        );
+    };
+
+    const ProgressRing = ({ value }) => {
+        const [dashArray, setDashArray] = useState(0);
+        useEffect(() => {
+            setDashArray(value * 2 * 60 * Math.PI);
+        }, [dashArray]);
+        return (
+            <svg
+                className="progress-circle"
+                style={{ strokeDasharray: `${dashArray} 999` }}
+                viewbox="0 0 100 100"
+            >
+                <circle cx="50%" cy="50%" r="60" />
+            </svg>
+        );
+    };
+
     const AboutPage = () => (
         <div className="about page">
             <div className="left">
                 <div className="center top">
-                    <span className="icon" />
-                    <h3>Zhou Zebo</h3>
-                    <h4>Full Stack Developer</h4>
+                    <span className="icon" onClick={() => setShowIntro(true)} />
+                    <h3>Zebo, Zhou</h3>
+                    <h4>About to be a Full Stack Developer</h4>
                 </div>
                 <div className="bottom">
                     <div>
@@ -149,8 +270,8 @@ export default function App() {
                     </div>
                     <div>
                         <p>
-                            Hi I'm Mike, a tech enthusiast! I love every innovative digital product, both hardware and software, and every cute things.
-                            During my leisure time, I love play around with trendy frameworks / technologies.
+                            Hi I'm Mike, a tech enthusiast! I love every innovative digital product, both hardware and software.
+                            During my leisure time, I love play around with trendy frameworks & gadgets.
                         </p>
                     </div>
                     <div>
@@ -158,49 +279,72 @@ export default function App() {
                     </div>
                 </div>
             </div>
-            <Fade top delay={800}>
-                <div className="right">
-                    <h2>
-                        <span className="dot">
-                            <MdWork />
-                        </span>
-                        WORK EXPERIENCE
-                    </h2>
-                    {
-                        [
-                            {
-                                position: 'Software Engineer Intern',
-                                company: 'KaChick AI Limited',
-                                time: 'Jun 2020 - Spet 2020',
-                                descriptions: [
-                                    'Co developed an online video proofing platform using React.js and Firebase.',
-                                    'Assist in the maintenance and enhancement of an existing photo proofing platform',
-                                    'Conduct feasibility studies in computer vision such as Google Vision and open-source models to analyze visual data.',
-                                ],
-                            },
-                        ].map(exp => <ExperienceCard experience={exp} />)
-                    }
-                    <h2>
-                        <span className="dot">
-                            <MdSchool />
-                        </span>
-                        EDUCATION
-                    </h2>
-                    {
-                        [
-                            {
-                                position: 'The Chinese University of Hong Kong',
-                                company: 'BEng Artificial Intellegience: System & Technology',
-                                time: 'Spet 2019 - Present',
-                                descriptions: [
-                                    'GPA: 3.7 / 4',
-                                    'Dean\'s List, 2019-2020',
-                                ],
-                            },
-                        ].map(exp => <ExperienceCard experience={exp} />)
-                    }
+            <div className="right">
+                <h2>
+                    <span className="dot">
+                        <MdWork />
+                    </span>
+                    WORK EXPERIENCE
+                </h2>
+                {
+                    [
+                        {
+                            position: 'Software Engineer Intern',
+                            company: 'KaChick AI Limited',
+                            time: 'Jun 2020 - Spet 2020',
+                            descriptions: [
+                                'Co-developed an online video proofing platform using React.js and Firebase.',
+                                'Implemented a fully functional player control without external libraries',
+                                'Assist in the maintenance and enhancement of an existing photo proofing platform',
+                                'Conduct feasibility studies in computer vision such as Google Vision and open-source models to analyze visual data.',
+                            ],
+                        },
+                    ].map(exp => <ExperienceCard experience={exp} key={exp.time} />)
+                }
+                <h2>
+                    <span className="dot">
+                        <MdSchool />
+                    </span>
+                    EDUCATION
+                </h2>
+                {
+                    [
+                        {
+                            position: 'The Chinese University of Hong Kong',
+                            company: 'BEng Artificial Intellegience: System & Technology',
+                            time: 'Spet 2019 - Present',
+                            descriptions: [
+                                'Dean\'s List, 2019-2020',
+                            ],
+                        },
+                    ].map(exp => <ExperienceCard experience={exp} key={exp.time} />)
+                }
+                <SkillCard />
+                <h2>
+                    <span className="dot">
+                        <MdFavorite />
+                    </span>
+                    INTERESTS
+                </h2>
+                <div className="interests-wrapper">
+                    <div>
+                        <AiFillRead />
+                        Reading
+                    </div>
+                    <div>
+                        <AiFillCode />
+                        Coding
+                    </div>
+                    <div onClick={() => window.open('https://scoresaber.com/u/76561198398187162')}>
+                        <GiLightSabers />
+                        Beat Saber
+                    </div>
+                    <div>
+                        <GiPistolGun />
+                        FPS Games
+                    </div>
                 </div>
-            </Fade>
+            </div>
         </div>
     );
 
@@ -210,7 +354,7 @@ export default function App() {
                 showIntro ?
                     <IntroPage /> :
                     <Fade bottom>
-                        <AboutPage />
+                        <AboutPage key="About" />
                     </Fade>
             }
         </>
