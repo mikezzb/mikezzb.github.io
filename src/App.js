@@ -1,9 +1,8 @@
-import React, { useReducer, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { isMobile } from 'react-device-detect';
 import { useSprings, a } from '@react-spring/three';
 import * as THREE from 'three';
-import { Canvas, useFrame } from 'react-three-fiber';
-import { Zoom, Fade } from 'react-reveal';
+import { Canvas } from 'react-three-fiber';
 import {
     AiFillLinkedin, AiFillGithub, AiFillCode, AiFillRead
 } from 'react-icons/ai';
@@ -152,36 +151,48 @@ const SKILLS = [
 ];
 
 export default function App() {
-    const [showIntro, setShowIntro] = useState(false);
-    const IntroPage = () => (
-        <div className="intro page">
-            <div className="text-overlay">
-                <div className="name-bar">
-                    <div>
-                        <h4>MIKE</h4>
-                        <h4>ZHOU</h4>
+    const [showIntro, setShowIntro] = useState(true);
+    const IntroPage = () => {
+        const [showTransition, setShowTransition] = useState(false);
+        useEffect(() => {
+            if (showTransition) {
+                setTimeout(() => setShowIntro(false), 2000);
+            }
+        }, [showTransition]);
+        return (
+            <div className="intro page">
+                {
+                    showTransition &&
+                    <div className="transition-circle out" />
+                }
+                <div className="text-overlay">
+                    <div className="name-bar">
+                        <div>
+                            <h4>MIKE</h4>
+                            <h4>ZHOU</h4>
+                        </div>
+                        <span className="divider" />
+                        <SocialMedia />
                     </div>
-                    <span className="divider" />
-                    <SocialMedia />
+                    <div className="description-bar">
+                        <BsArrowRight
+                            onClick={() => setShowTransition(true)}
+                        />
+                        <h4>Coder&Thinker</h4>
+                        <h4>@BEng AIST CUHK</h4>
+                    </div>
                 </div>
-                <div className="description-bar">
-                    <BsArrowRight
-                        onClick={() => setShowIntro(false)}
-                    />
-                    <h4>Coder&Thinker</h4>
-                    <h4>@BEng AIST CUHK</h4>
-                </div>
+                <Canvas
+                    shadowMap
+                    camera={{ position: [0, 0, 100], fov: 100 }}
+                    onCreated={({ gl }) => gl.setClearColor('black')}
+                >
+                    <Lights />
+                    <Content />
+                </Canvas>
             </div>
-            <Canvas
-                shadowMap
-                camera={{ position: [0, 0, 100], fov: 100 }}
-                onCreated={({ gl }) => gl.setClearColor('black')}
-            >
-                <Lights />
-                <Content />
-            </Canvas>
-        </div>
-    );
+        );
+    };
 
     const ExperienceCard = ({ experience }) => (
         <div className="experience">
@@ -234,7 +245,9 @@ export default function App() {
     const ProgressRing = ({ value }) => {
         const [dashArray, setDashArray] = useState(0);
         useEffect(() => {
-            setDashArray(value * 2 * 60 * Math.PI);
+            if (!dashArray) {
+                setDashArray(value * 2 * 60 * Math.PI);
+            }
         }, [dashArray]);
         return (
             <svg
@@ -247,115 +260,125 @@ export default function App() {
         );
     };
 
-    const AboutPage = () => (
-        <div className="about page">
-            <div className="left">
-                <div className="center top">
-                    <span className="icon" onClick={() => setShowIntro(true)} />
-                    <h3>Zebo, Zhou</h3>
-                    <h4>About to be a Full Stack Developer</h4>
+    const AboutPage = () => {
+        const [showTransition, setShowTransition] = useState(true);
+        useEffect(() => {
+            if (showTransition) {
+                setTimeout(() => setShowTransition(false), 2500);
+            }
+        }, [showTransition]);
+        return (
+            <div className="about page">
+                {
+                    showTransition &&
+                    <div className="transition-circle" />
+                }
+                <div className="left">
+                    <div className="center top">
+                        <span className="icon" onClick={() => setShowIntro(true)} />
+                        <h3>Zebo, Zhou</h3>
+                        <h4>About to be a Full Stack Developer</h4>
+                    </div>
+                    <div className="bottom">
+                        <div>
+                            <div>
+                                <span>Mail</span>
+                                <span>Blog</span>
+                                <span>Location</span>
+                            </div>
+                            <div>
+                                <span>mikezhoudev@gmail.com</span>
+                                <span>https://zzblog.herokuapp.com</span>
+                                <span>Hong Kong</span>
+                            </div>
+                        </div>
+                        <div>
+                            <p>
+                                Hi I'm Mike, a tech enthusiast! I love every innovative digital product, both hardware and software.
+                                During my leisure time, I love play around with trendy frameworks & gadgets.
+                            </p>
+                        </div>
+                        <div>
+                            <SocialMedia />
+                        </div>
+                    </div>
                 </div>
-                <div className="bottom">
-                    <div>
+                <div className="right">
+                    <h2>
+                        <span className="dot">
+                            <MdWork />
+                        </span>
+                        WORK EXPERIENCE
+                    </h2>
+                    {
+                        [
+                            {
+                                position: 'Software Engineer Intern',
+                                company: 'KaChick AI Limited',
+                                time: 'Jun 2020 - Spet 2020',
+                                descriptions: [
+                                    'Co-developed an online video proofing platform using React.js and Firebase.',
+                                    'Implemented a fully functional player control without external libraries',
+                                    'Assist in the maintenance and enhancement of an existing photo proofing platform',
+                                    'Conduct feasibility studies in computer vision such as Google Vision and open-source models to analyze visual data.',
+                                ],
+                            },
+                        ].map(exp => <ExperienceCard experience={exp} key={exp.time} />)
+                    }
+                    <h2>
+                        <span className="dot">
+                            <MdSchool />
+                        </span>
+                        EDUCATION
+                    </h2>
+                    {
+                        [
+                            {
+                                position: 'The Chinese University of Hong Kong',
+                                company: 'BEng Artificial Intellegience: System & Technology',
+                                time: 'Spet 2019 - Present',
+                                descriptions: [
+                                    'Dean\'s List, 2019-2020',
+                                ],
+                            },
+                        ].map(exp => <ExperienceCard experience={exp} key={exp.time} />)
+                    }
+                    <SkillCard />
+                    <h2>
+                        <span className="dot">
+                            <MdFavorite />
+                        </span>
+                        INTERESTS
+                    </h2>
+                    <div className="interests-wrapper">
                         <div>
-                            <span>Mail</span>
-                            <span>Blog</span>
-                            <span>Location</span>
+                            <AiFillRead />
+                            Reading
                         </div>
                         <div>
-                            <span>mikezhoudev@gmail.com</span>
-                            <span>https://zzblog.herokuapp.com</span>
-                            <span>Hong Kong</span>
+                            <AiFillCode />
+                            Coding
                         </div>
-                    </div>
-                    <div>
-                        <p>
-                            Hi I'm Mike, a tech enthusiast! I love every innovative digital product, both hardware and software.
-                            During my leisure time, I love play around with trendy frameworks & gadgets.
-                        </p>
-                    </div>
-                    <div>
-                        <SocialMedia />
+                        <div onClick={() => window.open('https://scoresaber.com/u/76561198398187162')}>
+                            <GiLightSabers />
+                            Beat Saber
+                        </div>
+                        <div>
+                            <GiPistolGun />
+                            FPS Games
+                        </div>
                     </div>
                 </div>
             </div>
-            <div className="right">
-                <h2>
-                    <span className="dot">
-                        <MdWork />
-                    </span>
-                    WORK EXPERIENCE
-                </h2>
-                {
-                    [
-                        {
-                            position: 'Software Engineer Intern',
-                            company: 'KaChick AI Limited',
-                            time: 'Jun 2020 - Spet 2020',
-                            descriptions: [
-                                'Co-developed an online video proofing platform using React.js and Firebase.',
-                                'Implemented a fully functional player control without external libraries',
-                                'Assist in the maintenance and enhancement of an existing photo proofing platform',
-                                'Conduct feasibility studies in computer vision such as Google Vision and open-source models to analyze visual data.',
-                            ],
-                        },
-                    ].map(exp => <ExperienceCard experience={exp} key={exp.time} />)
-                }
-                <h2>
-                    <span className="dot">
-                        <MdSchool />
-                    </span>
-                    EDUCATION
-                </h2>
-                {
-                    [
-                        {
-                            position: 'The Chinese University of Hong Kong',
-                            company: 'BEng Artificial Intellegience: System & Technology',
-                            time: 'Spet 2019 - Present',
-                            descriptions: [
-                                'Dean\'s List, 2019-2020',
-                            ],
-                        },
-                    ].map(exp => <ExperienceCard experience={exp} key={exp.time} />)
-                }
-                <SkillCard />
-                <h2>
-                    <span className="dot">
-                        <MdFavorite />
-                    </span>
-                    INTERESTS
-                </h2>
-                <div className="interests-wrapper">
-                    <div>
-                        <AiFillRead />
-                        Reading
-                    </div>
-                    <div>
-                        <AiFillCode />
-                        Coding
-                    </div>
-                    <div onClick={() => window.open('https://scoresaber.com/u/76561198398187162')}>
-                        <GiLightSabers />
-                        Beat Saber
-                    </div>
-                    <div>
-                        <GiPistolGun />
-                        FPS Games
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+        );
+    };
 
     return (
         <>
             {
                 showIntro ?
                     <IntroPage /> :
-                    <Fade bottom>
-                        <AboutPage key="About" />
-                    </Fade>
+                    <AboutPage key="About" />
             }
         </>
     );
